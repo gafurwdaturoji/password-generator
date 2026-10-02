@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Password Generator</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #111827, #1e3a8a);
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 450px;
+    background: rgba(255,255,255,0.08);
+    padding: 25px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+h1 {
+    text-align: center;
+    margin-top: 0;
+}
+
+.subtitle {
+    text-align: center;
+    color: #cbd5e1;
+}
+
+.password-box {
+    display: flex;
+    gap: 8px;
+    margin: 25px 0;
+}
+
+#password {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: #0f172a;
+    color: white;
+    font-size: 16px;
+}
+
+button {
+    border: none;
+    padding: 12px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#copy {
+    background: #22c55e;
+    color: white;
+}
+
+.generate {
+    width: 100%;
+    background: #3b82f6;
+    color: white;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+.option {
+    margin: 15px 0;
+}
+
+input[type="range"] {
+    width: 100%;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 25px;
+    color: #94a3b8;
+    font-size: 13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🔐 Password Generator</h1>
+
+    <p class="subtitle">
+        Buat password acak yang kuat dengan mudah.
+    </p>
+
+    <div class="password-box">
+        <input id="password" readonly placeholder="Password kamu...">
+        <button id="copy" onclick="copyPassword()">Copy</button>
+    </div>
+
+    <div class="option">
+        <label>
+            Panjang Password:
+            <b id="lengthValue">16</b>
+        </label>
+
+        <input
+            type="range"
+            id="length"
+            min="6"
+            max="50"
+            value="16"
+            oninput="updateLength()"
+        >
+    </div>
+
+    <div class="option">
+        <label>
+            <input type="checkbox" id="uppercase" checked>
+            Huruf besar (A-Z)
+        </label>
+
+        <label>
+            <input type="checkbox" id="lowercase" checked>
+            Huruf kecil (a-z)
+        </label>
+
+        <label>
+            <input type="checkbox" id="numbers" checked>
+            Angka (0-9)
+        </label>
+
+        <label>
+            <input type="checkbox" id="symbols" checked>
+            Simbol (!@#$)
+        </label>
+    </div>
+
+    <button class="generate" onclick="generatePassword()">
+        ⚡ Buat Password
+    </button>
+
+    <div class="footer">
+        Password dibuat langsung di perangkat kamu.
+    </div>
+
+</div>
+
+<script>
+
+function updateLength() {
+    document.getElementById("lengthValue").textContent =
+        document.getElementById("length").value;
+}
+
+function generatePassword() {
+
+    const length =
+        Number(document.getElementById("length").value);
+
+    let characters = "";
+
+    if (document.getElementById("uppercase").checked) {
+        characters += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    }
+
+    if (document.getElementById("lowercase").checked) {
+        characters += "abcdefghijklmnopqrstuvwxyz";
+    }
+
+    if (document.getElementById("numbers").checked) {
+        characters += "0123456789";
+    }
+
+    if (document.getElementById("symbols").checked) {
+        characters += "!@#$%^&*()_+-=[]{}|;:,.<>?";
+    }
+
+    if (characters.length === 0) {
+        alert("Pilih minimal satu jenis karakter!");
+        return;
+    }
+
+    let password = "";
+
+    const randomArray =
+        new Uint32Array(length);
+
+    crypto.getRandomValues(randomArray);
+
+    for (let i = 0; i < length; i++) {
+        password +=
+            characters[randomArray[i] % characters.length];
+    }
+
+    document.getElementById("password").value =
+        password;
+}
+
+function copyPassword() {
+
+    const password =
+        document.getElementById("password").value;
+
+    if (!password) {
+        alert("Buat password terlebih dahulu!");
+        return;
+    }
+
+    navigator.clipboard.writeText(password);
+
+    document.getElementById("copy").textContent =
+        "✓ Copied";
+
+    setTimeout(() => {
+        document.getElementById("copy").textContent =
+            "Copy";
+    }, 1500);
+}
+
+generatePassword();
+
+</script>
+
+</body>
+</html>
